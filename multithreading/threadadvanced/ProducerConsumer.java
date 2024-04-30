@@ -8,8 +8,8 @@ package multithreading.threadadvanced;
  *     1.Producer-Thread -> Produces data and pushes it to #arrayQueue
  *     2.Consumer-Thread -> Consumes data and pulls it from #arrayQueue
  *
- * Above two threads works in a synchronised manner inorder to process and consume
- * data without having inconsistency in the process.
+ * The Producer-Consumer implementation is the base for the distributed systems like : RabbitMq , Kafka etc.
+ * Thread Pools and executor services also works on this design pattern only
  *
  * */
 
@@ -40,6 +40,10 @@ public class ProducerConsumer {
 
         int producedData = 0;
         while (true) {
+        /*
+         * the #commonResource act as a shared resource between producer and consumer threads
+         * It will be used for inter thread communications.
+         * */
             synchronized (commonResource) {
                 if(isQueueFull()) {
                      System.out.println("Queue is full! please wait while consumer is working");
@@ -134,6 +138,10 @@ public class ProducerConsumer {
             producedData  = ++producedData;
             System.out.println("Data produced by Producer : " + producedData);
             arrayQueue[i] = producedData;
+
+            /* Once the producer has produced data in queue , it will notify the waiting consumer thread to start consuming data
+             * This ensures the parallel working of consumer and producer threads for better performance and low latency
+             * */
             if(!isProducerWorking){
                  isProducerWorking = true;
                  commonResource.notifyAll();
