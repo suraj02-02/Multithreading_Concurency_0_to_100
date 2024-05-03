@@ -1,3 +1,5 @@
+package multithreading.threadadvanced;
+
 /*  @Author Suraj.Yadav
  *
  *  This is the implementation for odd / even thread capabilties.
@@ -9,7 +11,7 @@
 
 public class OddEvenPrinterThreads {
 
-    private static Object sharedLock = new Object();
+    private static final Object sharedLock = new Object();
     static int start = 0;
     static int max = 20;
 
