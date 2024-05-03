@@ -1,4 +1,4 @@
-package multithreading.threadadvanced;
+package multithreading.thread_advanced_coding_questions;
 
 /*
  * @Author : Suraj.Yadav
