@@ -2,13 +2,11 @@ package multithreading.thread_advanced_concepts;
 
 /*
  * This class has all core concepts of threads specifically in java.
- * How threads states are created , managed , mapped with OS level threads , memory allocation / de-allocation etc.
- *
  * */
 
 public class ThreadCore {
 
-    public static void main(String[] args) throws InterruptedException {
+    public static void main(String[] args)  {
 
         // The below instructions will be executed by main / primordial thread
         System.out.println("Current thread: " + Thread.currentThread().getName());
@@ -25,55 +23,70 @@ public class ThreadCore {
          *            -> long stackSize
          *            -> int priority
          *            -> boolean daemon
+         *     4.FieldHolder act as an Encapsulator for Thread class properties
          *
-         *     4.Once we call the #start() method on the thread object then the execution of thread starts :
+         *     5.Once we call the #start() method on the thread object then the execution of thread starts :
          *            -> start method is wrapped with a #synchronised(this) block so that no 2 same threads can be started again
          *            -> @threadStatus property of @FieldHolder class is checked everyTime #start() method is called on a thread object;
          *                          if(@threadStatus != 0)
          *                               throw Exception
          *                          else
          *                             start the execution by creating a new OS level thread
-         *
          *            -> The creation of OS level thread is done in native code
-         *            -> Now there 2 ways in which the task can be perfomed by a thread :
-         *                  1. Overriding #run() method in our custom thread class
+         *            -> Stack memory is assigned to the thread.
+         *            -> Now there 2 ways in which the task can be performed by a thread :
+         *                  1. Overriding #run() method.
          *                  2. Provide runnable implementation as lambda expression inside @Thread class constructor. The task is the assigned to a task property of
          *                     @FieldHolder class which is created while new thread object creation.
-         *           -> Once the thread completes the task provided
-         *
-         *
-         *
+         *           -> Once the thread completes the task provided it gets terminated and it's resources are cleaned up
          *
          * */
 
         // By extending the Thread class directly
         CustomThreadUsingClass customThread = new CustomThreadUsingClass();
-        // customThread.start();
+       // customThread.start();
 
         // For creating a custom thread using @Interface we need to pass the runnable impl in Thread class constructor.
         CustomThreadUsingInterface customThreadUsingInterface = new CustomThreadUsingInterface();
         Thread thread = new Thread(customThreadUsingInterface);
-        // thread.start();
+       // thread.start();
 
         // We can also pass runnable impl as a lambda expression in Thread class constructor
         // this is the most concise way to create a custom thread.
         Thread thread2 = new Thread(() -> System.out.println("This is our custom thread : "  + Thread.currentThread().getName()));
-        Thread thread3 = new Thread(() -> System.out.println("This is our custom thread : "  + Thread.currentThread().getName()));
+        // thread2.start();
 
-        thread2.start();
-        thread2.join();
-        thread3.start();
-
-
-
-
-
-
-
-
-
-
+        threadInteruption();
 
     }
+
+
+    private static void threadInteruption() {
+
+        // creating and starting a new thread and providing it an intensive task (infinite loop)
+        Thread monitoringThread = new Thread(ThreadCore::longRunningTask);
+        try {
+            monitoringThread.start();
+            Thread.sleep(1000);
+        } catch (InterruptedException e) {
+            throw new RuntimeException(e);
+        }
+        monitoringThread.interrupt();
+    }
+
+    private static void longRunningTask() {
+
+        try {
+            Thread.sleep(100000);
+        } catch (InterruptedException e) {
+
+        }
+
+        while(true){
+            System.out.println("Thread Name : " + Thread.currentThread().getName() + "doing Intensive I/O operation");
+            // this act a long running task probably mimiking of a thread running in loop or thread blockage
+        }
+    }
+
 
 }
